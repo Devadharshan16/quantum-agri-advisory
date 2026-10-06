@@ -1,0 +1,11 @@
+qiskit==1.1.0
+qiskit-machine-learning==0.7.2
+qiskit-algorithms==0.3.0
+qiskit-aer==0.14.2
+pylatexenc==2.10
+matplotlib==3.8.4
+pandas==2.2.2
+scikit-learn==1.4.2
+streamlit==1.35.0
+numpy==1.26.4
+joblib==1.4.2

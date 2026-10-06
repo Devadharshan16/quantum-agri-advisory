@@ -1,0 +1,36 @@
+# Virtual Environments
+.venv/
+venv/
+ENV/
+env/
+
+# Python cache & artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Data & Model weights (prevent committing large binary or raw dataset files if needed)
+# Keep lightweight schema/samples, ignore large dumps
+data/*.csv
+data/*.npy
+models/*.joblib
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# Streamlit
+.streamlit/secrets.toml
+
+# IDE & Editor configs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
