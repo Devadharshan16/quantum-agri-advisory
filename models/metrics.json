@@ -1,0 +1,6 @@
+{
+  "train_accuracy": 0.828125,
+  "test_accuracy": 0.725,
+  "num_iterations": 57,
+  "final_loss": 1.007437189389656
+}
