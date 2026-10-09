@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-QSVC Training — Quantum Kernel SVM · 4 Qubits · 22 Crops
-─────────────────────────────────────────────────────────
+QSVC Training — Quantum Kernel SVM × 7 Qubits × 22 Crops
+➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖
 Computes the quantum kernel matrix row-by-row with a progress bar,
 then feeds the precomputed kernel to classical SVM.
 
@@ -23,14 +23,14 @@ from sklearn.svm import SVC
 from sklearn.metrics import classification_report, accuracy_score
 
 print("=" * 70)
-print("PHASE 3: QSVC TRAINING  (Quantum Kernel SVM · 4 Qubits · 22 Crops)")
+print("PHASE 3: QSVC TRAINING  (Quantum Kernel SVM × 7 Qubits × 22 Crops)")
 print("=" * 70)
 
-# ── Config ────────────────────────────────────────────────────
-NUM_QUBITS   = 4
-NUM_FEATURES = 4
+# ➖➖ Config ➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖
+NUM_QUBITS   = 7
+NUM_FEATURES = 7
 
-# ── Data ──────────────────────────────────────────────────────
+# ➖➖ Data ➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖
 print("\n[1/6] Loading preprocessed data...")
 X_train = np.load('data/X_train_scaled.npy')
 X_test  = np.load('data/X_test_scaled.npy')
@@ -48,7 +48,7 @@ assert X_train.shape[1] == NUM_FEATURES, (
     "Re-run data_prep.py."
 )
 
-# ── Quantum Kernel ────────────────────────────────────────────
+# ➖➖ Quantum Kernel ➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖
 print("\n[2/6] Building quantum kernel...")
 feature_map = ZZFeatureMap(
     feature_dimension=NUM_QUBITS,
@@ -63,7 +63,7 @@ print(f"  Qubits       : {NUM_QUBITS}")
 print(f"  Kernel       : FidelityQuantumKernel (quantum fidelity)")
 print(f"  Trainable quantum params : 0")
 
-# ── Compute TRAINING kernel matrix with progress bar ──────────
+# ➖➖ Compute TRAINING kernel matrix with progress bar ➖➖➖➖➖➖➖➖➖➖
 print("\n[3/6] Computing training kernel matrix (with progress)...")
 n_train = X_train.shape[0]
 total_rows = n_train
@@ -97,7 +97,7 @@ for i in range(n_train):
 
 print(f"\n\n  Training kernel matrix computed in {time.time()-start_time:.1f}s")
 
-# ── Compute TEST kernel matrix with progress bar ──────────────
+# ➖➖ Compute TEST kernel matrix with progress bar ➖➖➖➖➖➖➖➖➖➖➖➖➖➖
 print("\n[4/6] Computing test kernel matrix...")
 n_test = X_test.shape[0]
 print(f"  Matrix size: {n_test} x {n_train}")
@@ -126,13 +126,13 @@ for i in range(n_test):
 
 print(f"\n\n  Test kernel matrix computed in {time.time()-start_time2:.1f}s")
 
-# ── Train classical SVM on precomputed kernel ─────────────────
+# ➖➖ Train classical SVM on precomputed kernel ➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖
 print("\n[5/6] Training SVM on precomputed quantum kernel...")
 svc = SVC(kernel='precomputed', C=1.0, decision_function_shape='ovr')
 svc.fit(K_train, y_train)
 print("  SVM training complete (convex optimization — guaranteed global optimum)")
 
-# ── Evaluate ──────────────────────────────────────────────────
+# ➖➖ Evaluate ➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖
 print("\n[6/6] Evaluation & saving...")
 y_pred_train = svc.predict(K_train)
 y_pred_test  = svc.predict(K_test)
@@ -150,7 +150,7 @@ print(classification_report(
     digits=2
 ))
 
-# ── Persist ───────────────────────────────────────────────────
+# ➖➖ Persist ➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖
 # Save the SVM model, kernel matrices, and training data for predict.py
 joblib.dump(svc, 'models/qsvc_model.joblib')
 print("  Saved: models/qsvc_model.joblib")

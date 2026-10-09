@@ -72,14 +72,13 @@ pip install -r requirements.txt
 ## Phase 1: Data Preparation
 
 ### File: `data_prep.py`
-*(Uses StandardScaler, PCA for 7->4 features, MinMaxScaler to [0, π], and subsamples to 25 samples per class)*
+*(Uses StandardScaler to normalize 7 features, MinMaxScaler to [0, π], and subsamples to 25 samples per class)*
 
 *(Omitted full code for brevity, see local file `data_prep.py`)*
 
 Outputs:
 - `models/label_encoder.joblib`
 - `models/standard_scaler.joblib`
-- `models/pca_transformer.joblib`
 - `models/minmax_scaler.joblib`
 - `models/data_meta.json`
 - `data/X_train_scaled.npy`, etc.
@@ -89,7 +88,7 @@ Outputs:
 ## Phase 2: Quantum Circuit Design
 
 ### File: `circuit_design.py`
-*(Creates a 4-qubit `ZZFeatureMap` with `reps=2`. No variational ansatz.)*
+*(Creates a 7-qubit `ZZFeatureMap` with `reps=2`. No variational ansatz.)*
 
 *(Omitted full code for brevity, see local file `circuit_design.py`)*
 
@@ -171,8 +170,8 @@ python predict.py
 *"Our previous approach, Variational Quantum Classifiers (VQC), suffered from barren plateaus where gradients vanish, keeping accuracy capped at ~75%. To fix this, we pivoted to QSVC. QSVC offloads optimization to a convex classical SVM, eliminating local minima issues."*
 
 ### Architecture (1 min)
-1. **Data pipeline:** 7 features → StandardScaler → PCA (4 components) → MinMaxScaler to [0, π]
-2. **Quantum encoding:** 4-qubit `ZZFeatureMap` embeds classical data into a quantum state `|φ(x)⟩`.
+1. **Data pipeline:** 7 features → StandardScaler → MinMaxScaler to [0, π]
+2. **Quantum encoding:** 7-qubit `ZZFeatureMap` embeds classical data into a quantum state `|φ(x)⟩`.
 3. **Quantum Kernel:** Computes the fidelity `|⟨φ(x)|φ(x')⟩|²` between data points. **This is literally the Swap Test from Class 43 applied to ML.**
 4. **Hybrid training:** Classical SVM takes the quantum kernel matrix and finds the optimal hyperplane.
 
@@ -211,8 +210,6 @@ python predict.py
 Raw Input (7 features)
       ↓
 [StandardScaler] Normalize (zero mean, unit variance)
-      ↓
-[PCA] Dimensionality Reduction (7 → 4)
       ↓
 [MinMaxScaler] Scale to [0, π]
       ↓

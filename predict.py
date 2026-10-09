@@ -1,63 +1,50 @@
-#!/usr/bin/env python3
-"""
-Quantum Agricultural Advisory System
-────────────────────────────────────
-Takes weather + soil inputs → runs trained QSVC → recommends a crop.
-This is the final "product" layer on top of the trained quantum model.
-
-Run:  python predict.py
-"""
-
-import numpy as np
-import json
-import joblib
 import os
-import warnings
-warnings.filterwarnings('ignore')
+import json
+import numpy as np
+import joblib
 
-# ── Crop knowledge base (for richer advisory output) ─────────
 CROP_INFO = {
-    'apple'      : {'season': 'Oct–Mar',        'region': 'Himachal Pradesh, J&K, Uttarakhand',
-                    'tip': 'Requires cold winters and cool summers.'},
-    'banana'     : {'season': 'Year-round',     'region': 'Tamil Nadu, AP, Maharashtra',
-                    'tip': 'Thrives in humid tropical climate; needs irrigation.'},
-    'blackgram'  : {'season': 'Jun–Sep (Kharif)', 'region': 'South India (urad dal)',
-                    'tip': 'Drought tolerant; good for light soil.'},
-    'chickpea'   : {'season': 'Oct–Mar (Rabi)', 'region': 'MP, Maharashtra, Rajasthan',
-                    'tip': 'India produces 70% of world supply; no-waterlog needed.'},
-    'coconut'    : {'season': 'Year-round',     'region': 'Kerala, Tamil Nadu, Karnataka',
-                    'tip': 'High humidity coastal crop; 4-5 years to first yield.'},
-    'coffee'     : {'season': 'Oct–Feb',        'region': 'Karnataka, Kerala, Tamil Nadu',
-                    'tip': 'Shade-grown; good drainage essential.'},
-    'cotton'     : {'season': 'Apr–Nov (Kharif)', 'region': 'Gujarat, Maharashtra, Telangana',
-                    'tip': 'India 2nd largest producer; needs well-drained black soil.'},
-    'grapes'     : {'season': 'Jan–May',        'region': 'Maharashtra, Karnataka',
-                    'tip': 'Requires training systems (trellis); drip irrigation best.'},
-    'jute'       : {'season': 'Mar–Jun (Kharif)', 'region': 'West Bengal, Assam, Bihar',
-                    'tip': 'Grows in alluvial soil; needs high rainfall.'},
-    'kidneybeans': {'season': 'Oct–Mar (Rabi)', 'region': 'UP, Uttarakhand, J&K',
-                    'tip': 'Cool climate pulse; fix nitrogen in soil.'},
-    'lentil'     : {'season': 'Oct–Mar (Rabi)', 'region': 'North India (masoor dal)',
+    'apple'      : {'season': 'Sep—Nov',            'region': 'J&K, Himachal Pradesh',
+                    'tip': 'Needs 1000-1500 hours of chilling (below 7C).'},
+    'banana'     : {'season': 'Year-round',         'region': 'Tamil Nadu, Maharashtra, Gujarat',
+                    'tip': 'Requires heavy irrigation; avoid water stagnation.'},
+    'blackgram'  : {'season': 'Jun—Sep (Kharif)',   'region': 'AP, Maharashtra, MP',
+                    'tip': 'Short duration crop (90-120 days). Good for crop rotation.'},
+    'chickpea'   : {'season': 'Oct—Mar (Rabi)',     'region': 'MP, Maharashtra, Rajasthan',
+                    'tip': 'Highly sensitive to excessive moisture/frost.'},
+    'coconut'    : {'season': 'Year-round',         'region': 'Kerala, Karnataka, Tamil Nadu',
+                    'tip': 'Needs well-distributed rainfall and sandy loam soil.'},
+    'coffee'     : {'season': 'Nov—Feb',            'region': 'Karnataka (Kodagu), Kerala',
+                    'tip': 'Grows best under shade trees in hilly tracts.'},
+    'cotton'     : {'season': 'May—Oct (Kharif)',   'region': 'Gujarat, Maharashtra, Telangana',
+                    'tip': 'Black soil (Regur) is ideal. Very susceptible to bollworm.'},
+    'grapes'     : {'season': 'Feb—Apr',            'region': 'Maharashtra (Nashik)',
+                    'tip': 'Requires severe pruning for high yield.'},
+    'jute'       : {'season': 'Feb—May (Zaid)',     'region': 'West Bengal, Assam, Bihar',
+                    'tip': 'Needs hot, humid climate and abundant water for retting.'},
+    'kidneybeans': {'season': 'Jun—Oct (Kharif)',   'region': 'Maharashtra, Karnataka',
+                    'tip': 'Sensitive to salinity; needs well-drained soil.'},
+    'lentil'     : {'season': 'Oct—Mar (Rabi)',     'region': 'North India (masoor dal)',
                     'tip': 'Highly nutritious; grows well in loamy soil.'},
-    'maize'      : {'season': 'Jun–Oct (Kharif)', 'region': 'Karnataka, Rajasthan, MP',
+    'maize'      : {'season': 'Jun—Oct (Kharif)',   'region': 'Karnataka, Rajasthan, MP',
                     'tip': '3rd largest cereal in India; versatile crop.'},
-    'mango'      : {'season': 'Mar–Jun',        'region': 'UP, AP, Tamil Nadu',
-                    'tip': 'National fruit of India; 5–8 years to first yield.'},
-    'mothbeans'  : {'season': 'Jun–Sep (Kharif)', 'region': 'Rajasthan staple',
+    'mango'      : {'season': 'Mar—Jun',            'region': 'UP, AP, Tamil Nadu',
+                    'tip': 'National fruit of India; 5—8 years to first yield.'},
+    'mothbeans'  : {'season': 'Jun—Sep (Kharif)',   'region': 'Rajasthan staple',
                     'tip': 'Extreme drought resistance; thrives in arid zones.'},
-    'mungbean'   : {'season': 'Jun–Sep (Kharif)', 'region': 'Pan-India (moong dal)',
+    'mungbean'   : {'season': 'Jun—Sep (Kharif)',   'region': 'Pan-India (moong dal)',
                     'tip': 'Short-duration; good for crop rotation.'},
-    'orange'     : {'season': 'Nov–Mar',        'region': 'Nagpur, Coorg, Sikkim',
+    'orange'     : {'season': 'Nov—Mar',            'region': 'Nagpur, Coorg, Sikkim',
                     'tip': 'Nagpur orange is GI-tagged; needs well-drained soil.'},
-    'papaya'     : {'season': 'Year-round',     'region': 'AP, Tamil Nadu, Gujarat',
-                    'tip': 'Fastest fruiting tropical crop; harvest in 9–12 months.'},
-    'pigeonpeas' : {'season': 'Jun–Nov (Kharif)', 'region': 'Maharashtra, AP (tur dal)',
+    'papaya'     : {'season': 'Year-round',         'region': 'AP, Tamil Nadu, Gujarat',
+                    'tip': 'Fastest fruiting tropical crop; harvest in 9—12 months.'},
+    'pigeonpeas' : {'season': 'Jun—Nov (Kharif)',   'region': 'Maharashtra, AP (tur dal)',
                     'tip': 'India largest producer globally; deep-rooted.'},
-    'pomegranate': {'season': 'Aug–Feb',        'region': 'Maharashtra, Rajasthan, Gujarat',
+    'pomegranate': {'season': 'Aug—Feb',            'region': 'Maharashtra, Rajasthan, Gujarat',
                     'tip': 'Highly drought tolerant; profitable export crop.'},
-    'rice'       : {'season': 'Jun–Nov (Kharif)', 'region': 'Punjab, WB, Tamil Nadu',
+    'rice'       : {'season': 'Jun—Nov (Kharif)',   'region': 'Punjab, WB, Tamil Nadu',
                     'tip': 'Largest cultivated crop in India; needs waterlogging.'},
-    'watermelon' : {'season': 'Feb–Jun',        'region': 'AP, Karnataka, Rajasthan',
+    'watermelon' : {'season': 'Feb—Jun',            'region': 'AP, Karnataka, Rajasthan',
                     'tip': 'Sandy loam soil; short 70-90 day crop cycle.'},
 }
 
@@ -65,17 +52,16 @@ BANNER = """
 +========================================================+
 |    QUANTUM AGRICULTURAL ADVISORY SYSTEM                |
 |    Powered by QSVC (Quantum Kernel SVM)                |
-|    Course: 23CSE463 Quantum Computing - Amrita Chennai  |
+|    Course: 23CSE463 Quantum Computing - Amrita Chennai |
 +========================================================+
 """
 
-# ── Check model files exist ───────────────────────────────────
+# ➖➖ Check model files exist ➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖
 REQUIRED = [
     'models/qsvc_model.joblib',
     'models/X_train_kernel.npy',
     'models/label_encoder.joblib',
     'models/standard_scaler.joblib',
-    'models/pca_transformer.joblib',
     'models/minmax_scaler.joblib',
     'models/data_meta.json',
 ]
@@ -89,20 +75,19 @@ if missing:
         print(f"  X  {f}")
     raise SystemExit(1)
 
-# ── Load saved pipeline ───────────────────────────────────────
+# ➖➖ Load saved pipeline ➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖
 print(BANNER)
 print("Loading quantum model ", end='', flush=True)
 label_encoder = joblib.load('models/label_encoder.joblib')
 std_scaler    = joblib.load('models/standard_scaler.joblib')
-pca           = joblib.load('models/pca_transformer.joblib')
 scaler        = joblib.load('models/minmax_scaler.joblib')
 svc           = joblib.load('models/qsvc_model.joblib')
 X_train_kern  = np.load('models/X_train_kernel.npy')
 with open('models/data_meta.json') as f:
     meta = json.load(f)
 
-NUM_QUBITS   = meta['num_qubits']            # 4
-NUM_FEATURES = meta['num_pca_components']     # 4
+NUM_QUBITS   = meta['num_qubits']            # 7
+NUM_FEATURES = meta['num_features']          # 7
 num_classes  = meta['num_classes']
 
 # Build quantum kernel for inference
@@ -113,7 +98,7 @@ feature_map = ZZFeatureMap(feature_dimension=NUM_QUBITS, reps=2, entanglement='f
 kernel = FidelityQuantumKernel(feature_map=feature_map)
 print("done\n")
 
-# ── Helper: validated float input ────────────────────────────
+# ➖➖ Helper: validated float input ➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖
 def get_float(prompt, lo, hi):
     while True:
         try:
@@ -124,7 +109,7 @@ def get_float(prompt, lo, hi):
         except ValueError:
             print("    -> Please enter a number")
 
-# ── Main advisory loop ────────────────────────────────────────
+# ➖➖ Main advisory loop ➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖
 FEATURES = meta['features']   # ['N','P','K','temperature','humidity','ph','rainfall']
 
 print("=" * 60)
@@ -148,10 +133,9 @@ while True:
 
     # Classical preprocessing pipeline
     x_std    = std_scaler.transform(x_raw)    # standardize
-    x_pca    = pca.transform(x_std)           # 7 -> 4 PCA
-    x_scaled = scaler.transform(x_pca)        # scale to [0, pi]
+    x_scaled = scaler.transform(x_std)        # scale to [0, pi]
 
-    # ── QSVC inference ─────────────────────────────────────────
+    # ➖➖ QSVC inference ➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖
     print("\n  Running quantum kernel inference ", end='', flush=True)
     # Compute kernel vector: K(x_new, x_train) for all training points
     k_vec     = kernel.evaluate(x_scaled, X_train_kern)
@@ -175,8 +159,7 @@ while True:
     print(f"\n  Quantum pipeline:")
     print(f"    7 raw features")
     print(f"    -> StandardScaler (zero mean, unit variance)")
-    print(f"    -> {NUM_FEATURES} PCA components  "
-          f"(variance retained: {sum(meta['pca_explained_variance'])*100:.1f}%)")
+    print(f"    -> MinMaxScaler to [0, pi]")
     print(f"    -> {NUM_QUBITS}-qubit ZZFeatureMap (quantum kernel)")
     print(f"    -> QSVC {num_classes}-class classification")
     print(f"    -> {pred_crop}")

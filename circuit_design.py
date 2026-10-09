@@ -7,13 +7,13 @@ import warnings
 warnings.filterwarnings('ignore')
 
 print("=" * 65)
-print("PHASE 2: QUANTUM CIRCUIT DESIGN (4 Qubits — QSVC Kernel)")
+print("PHASE 2: QUANTUM CIRCUIT DESIGN (7 Qubits — QSVC Kernel)")
 print("=" * 65)
 
-NUM_QUBITS   = 4   # 4 qubits = 4 PCA components (one per qubit)
-NUM_FEATURES = 4   # 4 PCA components
+NUM_QUBITS   = 7   # 7 qubits = 7 original features (one per qubit)
+NUM_FEATURES = 7   # 7 original features
 
-# ── Feature Map for Quantum Kernel ────────────────────────────
+# ➖➖ Feature Map for Quantum Kernel ➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖
 # ZZFeatureMap encodes data into the quantum state |phi(x)>
 # The kernel K(x, x') = |<phi(x)|phi(x')>|^2  (fidelity)
 # This is the SWAP test from Class 43 applied to ML!
@@ -45,7 +45,7 @@ print("    - QSVC uses quantum circuit ONLY to compute kernel matrix")
 print("    - Classical SVM handles classification -> convex, guaranteed-optimal")
 print("    - No trainable quantum parameters -> no barren plateau problem!")
 
-# ── Save diagram ──────────────────────────────────────────────
+# ➖➖ Save diagram ➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖
 os.makedirs('assets', exist_ok=True)
 print("\n[SAVING] Circuit diagram...")
 try:
@@ -56,8 +56,8 @@ try:
 except Exception as e:
     print(f"  Diagram skipped: {e}")
 
-# ── Print ASCII view ──────────────────────────────────────────
-print("\n── ZZFeatureMap (Quantum Kernel Circuit) ────────────────")
+# ➖➖ Print ASCII view ➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖
+print("\n➖➖ ZZFeatureMap (Quantum Kernel Circuit) ➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖")
 print(feature_map.draw())
 
 print("\n" + "=" * 65)
