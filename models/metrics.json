@@ -1,6 +1,25 @@
 {
-  "train_accuracy": 0.828125,
-  "test_accuracy": 0.725,
-  "num_iterations": 57,
-  "final_loss": 1.007437189389656
+  "train_accuracy": 0.45865384615384613,
+  "test_accuracy": 0.46153846153846156,
+  "num_qubits": 3,
+  "num_features": 3,
+  "num_classes": 13,
+  "num_iterations": 500,
+  "final_loss": 13.681786649848696,
+  "crops": [
+    "banana",
+    "blackgram",
+    "chickpea",
+    "coconut",
+    "cotton",
+    "kidneybeans",
+    "lentil",
+    "maize",
+    "mango",
+    "mothbeans",
+    "mungbean",
+    "pigeonpeas",
+    "rice"
+  ],
+  "selection_basis": "Major Indian crops by cultivation area and food security importance"
 }

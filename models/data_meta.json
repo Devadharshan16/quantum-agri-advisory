@@ -1,0 +1,55 @@
+{
+  "features": [
+    "N",
+    "P",
+    "K",
+    "temperature",
+    "humidity",
+    "ph",
+    "rainfall"
+  ],
+  "weather_features": [
+    "temperature",
+    "humidity",
+    "rainfall"
+  ],
+  "soil_features": [
+    "N",
+    "P",
+    "K",
+    "ph"
+  ],
+  "num_pca_components": 4,
+  "num_qubits": 4,
+  "num_classes": 22,
+  "crops": [
+    "apple",
+    "banana",
+    "blackgram",
+    "chickpea",
+    "coconut",
+    "coffee",
+    "cotton",
+    "grapes",
+    "jute",
+    "kidneybeans",
+    "lentil",
+    "maize",
+    "mango",
+    "mothbeans",
+    "mungbean",
+    "muskmelon",
+    "orange",
+    "papaya",
+    "pigeonpeas",
+    "pomegranate",
+    "rice",
+    "watermelon"
+  ],
+  "pca_explained_variance": [
+    0.2785236542185147,
+    0.18975895378588947,
+    0.157969698466334,
+    0.14329046803013812
+  ]
+}

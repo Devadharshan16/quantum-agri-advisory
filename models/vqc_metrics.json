@@ -1,0 +1,10 @@
+{
+  "train_accuracy": 0.36833333333333335,
+  "test_accuracy": 0.32045454545454544,
+  "num_qubits": 5,
+  "num_classes": 22,
+  "params": 50,
+  "optimizer": "cobyla",
+  "evaluations": 1500,
+  "final_loss": 3.34656881447141
+}

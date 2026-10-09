@@ -1,0 +1,12 @@
+{
+  "gamma": 1.0,
+  "C": 10,
+  "cv_accuracy": 0.9852272727272726,
+  "train_accuracy": 0.9948863636363636,
+  "test_accuracy": 0.9931818181818182,
+  "qmeans_test_accuracy": 0.875,
+  "classical_svm_rbf_test": 0.9886363636363636,
+  "random_forest_test": 0.9954545454545455,
+  "num_qubits": 7,
+  "num_classes": 22
+}
