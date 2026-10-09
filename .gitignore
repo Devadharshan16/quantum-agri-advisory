@@ -34,3 +34,5 @@ models/*.joblib
 # OS files
 .DS_Store
 Thumbs.db
+
+23CSE463 QC.pdf
