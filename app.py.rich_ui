@@ -497,7 +497,7 @@ else:
     html_loading = f"""
     <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:50vh;font-family:'Plus Jakarta Sans',sans-serif;">
         <div style="width:48px;height:48px;border:4px solid rgba(244,168,83,0.2);border-top-color:#f4a853;border-radius:50%;animation:spin 1s linear infinite;"></div>
-        <div style="margin-top:24px;font-size:18px;color:#f0ece3;font-weight:500;letter-spacing:1px;">{t.get('analyzing', 'Analyzing field data...')}</div>
+        <div style="margin-top:24px;font-size:18px;color:#f0ece3;font-weight:500;letter-spacing:1px;">{t['analyzing']}</div>
         <style>@keyframes spin {{ to {{ transform: rotate(360deg); }} }}</style>
     </div>
     """
@@ -516,9 +516,10 @@ else:
     placeholder.empty()
 
     crop         = row['predicted_crop']
-    crop_display = CROP_TRANSLATIONS.get(crop.lower(), {}).get(lang, crop.title())
+    crop_display = CROP_TRANSLATIONS.get(crop.lower(), {{}}).get(lang, crop.title())
     cinfo        = CROP_CONDITIONS.get(crop.lower(), DEFAULT_CROP)
     
+    from app import t_cond
     t_season = t_cond(cinfo['season'], lang)
     t_water = t_cond(cinfo['water'], lang)
     t_soil = t_cond(cinfo['soil'], lang)
@@ -564,7 +565,7 @@ else:
         <div style="position:absolute;right:0;top:-20px;width:300px;height:300px;background:radial-gradient(circle, rgba(74,222,128,0.1) 0%, transparent 70%);filter:blur(40px);z-index:0;"></div>
         <div style="position:relative;z-index:1;">
             <div style="font-size:14px;color:#94a3b8;letter-spacing:4px;margin-bottom:16px;font-weight:600;text-transform:uppercase;">
-                {t.get("field_report", "FIELD REPORT")}
+                {t["field_report"]}
             </div>
             <div style="font-size:80px;font-weight:800;letter-spacing:-2px;color:#f0ece3;line-height:1;margin-bottom:32px;
                         text-shadow: 0 0 40px rgba(244,168,83,0.1);">
@@ -622,7 +623,7 @@ else:
         for i in range(1, 6):
             if f'top{i}' in row:
                 c_name = row[f'top{i}']
-                c_name_translated = CROP_TRANSLATIONS.get(c_name.lower(), {}).get(lang, c_name.title())
+                c_name_translated = CROP_TRANSLATIONS.get(c_name.lower(), {{}}).get(lang, c_name.title())
                 c_prob = float(row[f'top{i}_prob']) * 100
                 color = "#f4a853" if i == 1 else "#94a3b8"
                 glow  = f"box-shadow:0 0 15px {color};" if i == 1 else ""
@@ -675,26 +676,26 @@ else:
         fig = go.Figure(go.Indicator(
             mode = "gauge+number",
             value = val,
-            title = {'text': title, 'font': {'size': 14, 'color': '#94a3b8'}},
-            number = {'font': {'size': 24, 'color': '#f0ece3'}},
-            gauge = {
-                'axis': {'range': [min_v, max_v], 'tickwidth': 1, 'tickcolor': "rgba(255,255,255,0.1)"},
-                'bar': {'color': "#f4a853"},
+            title = {{'text': title, 'font': {{'size': 14, 'color': '#94a3b8'}}}},
+            number = {{'font': {{'size': 24, 'color': '#f0ece3'}}}},
+            gauge = {{
+                'axis': {{'range': [min_v, max_v], 'tickwidth': 1, 'tickcolor': "rgba(255,255,255,0.1)"}},
+                'bar': {{'color': "#f4a853"}},
                 'bgcolor': "rgba(255,255,255,0.02)",
                 'borderwidth': 0,
                 'steps': [
-                    {'range': [min_v, min_v + (max_v-min_v)*0.2], 'color': "rgba(239, 68, 68, 0.1)"},
-                    {'range': [min_v + (max_v-min_v)*0.8, max_v], 'color': "rgba(239, 68, 68, 0.1)"},
+                    {{'range': [min_v, min_v + (max_v-min_v)*0.2], 'color': "rgba(239, 68, 68, 0.1)"}},
+                    {{'range': [min_v + (max_v-min_v)*0.8, max_v], 'color': "rgba(239, 68, 68, 0.1)"}},
                 ]
-            }
+            }}
         ))
         fig.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', height=220, margin=dict(l=10, r=10, t=40, b=10))
         return fig
         
-    with gc1: st.plotly_chart(create_gauge(n, t['nitrogen'].split('(')[0].strip(), float(FEATURE_RANGES["N"][0]), float(FEATURE_RANGES["N"][1])), use_container_width=True, config={'displayModeBar': False})
-    with gc2: st.plotly_chart(create_gauge(p_val, t['phosphorus'].split('(')[0].strip(), float(FEATURE_RANGES["P"][0]), float(FEATURE_RANGES["P"][1])), use_container_width=True, config={'displayModeBar': False})
-    with gc3: st.plotly_chart(create_gauge(k, t['potassium'].split('(')[0].strip(), float(FEATURE_RANGES["K"][0]), float(FEATURE_RANGES["K"][1])), use_container_width=True, config={'displayModeBar': False})
-    with gc4: st.plotly_chart(create_gauge(ph, "pH", float(FEATURE_RANGES["ph"][0]), float(FEATURE_RANGES["ph"][1])), use_container_width=True, config={'displayModeBar': False})
+    with gc1: st.plotly_chart(create_gauge(n, t['nitrogen'].split('(')[0].strip(), float(FEATURE_RANGES["N"][0]), float(FEATURE_RANGES["N"][1])), use_container_width=True, config={{'displayModeBar': False}})
+    with gc2: st.plotly_chart(create_gauge(p_val, t['phosphorus'].split('(')[0].strip(), float(FEATURE_RANGES["P"][0]), float(FEATURE_RANGES["P"][1])), use_container_width=True, config={{'displayModeBar': False}})
+    with gc3: st.plotly_chart(create_gauge(k, t['potassium'].split('(')[0].strip(), float(FEATURE_RANGES["K"][0]), float(FEATURE_RANGES["K"][1])), use_container_width=True, config={{'displayModeBar': False}})
+    with gc4: st.plotly_chart(create_gauge(ph, "pH", float(FEATURE_RANGES["ph"][0]), float(FEATURE_RANGES["ph"][1])), use_container_width=True, config={{'displayModeBar': False}})
 
     # Plotly Bar Chart for Top 5 Probabilities
     st.markdown(f"<div style='margin-top:60px;margin-bottom:24px;font-size:22px;color:#f0ece3;font-weight:700;'>{t['probability_dist']}</div>", unsafe_allow_html=True)
@@ -704,7 +705,7 @@ else:
     for i in range(1, 6):
         if f'top{i}' in row:
             c_name = row[f'top{i}']
-            c_name_t = CROP_TRANSLATIONS.get(c_name.lower(), {}).get(lang, c_name.title())
+            c_name_t = CROP_TRANSLATIONS.get(c_name.lower(), {{}}).get(lang, c_name.title())
             c_prob = float(row[f'top{i}_prob']) * 100
             crops_for_chart.append(c_name_t)
             probs_for_chart.append(c_prob)
@@ -732,7 +733,7 @@ else:
         height=300
     )
     
-    st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
+    st.plotly_chart(fig, use_container_width=True, config={{'displayModeBar': False}})
 
     # Timestamp
     html_ts = f"""

@@ -118,7 +118,7 @@ def predict_crops(pipeline: dict, df_raw: pd.DataFrame) -> pd.DataFrame:
     y_pred = pipeline["svc"].predict(K)
     crops = pipeline["encoder"].inverse_transform(y_pred)
 
-    # 8. Top-3 probabilities from decision_function -> softmax
+    # 8. Top-5 probabilities from decision_function -> softmax
     dec = pipeline["svc"].decision_function(K)
     if dec.ndim == 1:
         probs = softmax(dec.reshape(1, -1))
@@ -128,13 +128,15 @@ def predict_crops(pipeline: dict, df_raw: pd.DataFrame) -> pd.DataFrame:
     results = []
     classes = pipeline["encoder"].classes_
     for i in range(len(X_raw)):
-        top3_idx = np.argsort(probs[i])[::-1][:3]
-        top3 = [(classes[j], float(probs[i, j])) for j in top3_idx]
+        top5_idx = np.argsort(probs[i])[::-1][:5]
+        top5 = [(classes[j], float(probs[i, j])) for j in top5_idx]
         results.append({
             "predicted_crop": crops[i],
-            "top1": top3[0][0], "top1_prob": f"{top3[0][1]:.3f}",
-            "top2": top3[1][0], "top2_prob": f"{top3[1][1]:.3f}",
-            "top3": top3[2][0], "top3_prob": f"{top3[2][1]:.3f}",
+            "top1": top5[0][0], "top1_prob": f"{top5[0][1]:.3f}",
+            "top2": top5[1][0], "top2_prob": f"{top5[1][1]:.3f}",
+            "top3": top5[2][0], "top3_prob": f"{top5[2][1]:.3f}",
+            "top4": top5[3][0], "top4_prob": f"{top5[3][1]:.3f}",
+            "top5": top5[4][0], "top5_prob": f"{top5[4][1]:.3f}",
         })
 
     return pd.DataFrame(results)
