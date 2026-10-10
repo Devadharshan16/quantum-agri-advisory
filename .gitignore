@@ -36,3 +36,4 @@ models/*.joblib
 Thumbs.db
 
 23CSE463 QC.pdf
+.agents

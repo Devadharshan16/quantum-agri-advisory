@@ -1,0 +1,12 @@
+{
+    "hyperparameters": {
+        "reps": 3,
+        "entanglement": "full",
+        "gamma": 0.1,
+        "C": 10.0
+    },
+    "seed": 42,
+    "qiskit_version": "1.1.0",
+    "sklearn_version": "1.4.2",
+    "numpy_version": "1.26.4"
+}

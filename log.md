@@ -1,32 +1,33 @@
-Phase 1:
-1. Data Preparation (`data_prep.py`): Downloaded the crop recommendation dataset (2200 rows, 22 crops). Encoded crop names to integers using LabelEncoder. Extracted the 7-feature matrix. Applied StandardScaler to normalize features, then applied PCA to compress 7 features down to 4 principal components. Applied MinMaxScaler to scale the PCA components to the [0, π] range for quantum angle encoding. Subsampled the training set to 25 samples per class (550 total) to ensure the QSVC kernel matrix computation is feasible on a classical CPU simulator, while keeping the full test set for honest evaluation.
+# Quantum Agricultural Advisory System — Development Log
 
-2. Dataset — Crop Recommendation Dataset:
-   - Full name: Crop Recommendation Dataset
-   - Original source: Kaggle, published by Atharva Ingle
-   - Working URL: https://raw.githubusercontent.com/Gladiator07/Harvestify/master/Data-processed/crop_recommendation.csv
-   - Total rows: 2200 (exactly 100 samples per crop — perfectly balanced)
-   - Total columns: 8
-   - Features (7 input columns): N, P, K, temperature, humidity, ph, rainfall
-   - Target column: label — 22 unique crop classes
+## Phase 1: Data Preparation
+1. `data_prep.py`: Downloads the full crop recommendation dataset (2200 rows, 22 crops, 100 per class). Encodes labels with LabelEncoder. Extracts the 7-feature matrix (N, P, K, temperature, humidity, ph, rainfall). Performs stratified 80/20 split (1760 train / 440 test). Applies StandardScaler and MinMaxScaler to [0, π] — both fit on train only. Clips test values to [0, π]. No PCA — all 7 features map directly to 7 qubits.
 
-3. Why this dataset was chosen:
-   - Perfect class balance (100 samples per crop).
-   - Features map directly to real-world agricultural parameters.
-   - PCA + MinMaxScaling fits all values cleanly into [0, π].
+2. Dataset: Crop Recommendation Dataset from Kaggle (Atharva Ingle). 2200 rows, perfectly balanced.
 
-Phase 2 
-4. Quantum Circuit Design (`circuit_design.py`): Transitioned from a Variational Quantum Classifier (VQC) to a Quantum Support Vector Classifier (QSVC) to overcome the barren plateau problem. The circuit now consists purely of a `ZZFeatureMap` with 4 qubits, 2 repetitions, and full entanglement. This circuit encodes the classical data into a quantum state |φ(x)⟩. Crucially, there are zero trainable quantum parameters. The circuit is used solely to compute the quantum kernel (fidelity) between data points.
+## Phase 2: Quantum Circuit Design
+3. `circuit_design.py`: Creates a 7-qubit ZZFeatureMap (reps=2, full entanglement). No variational ansatz — circuit is used purely as a feature map for kernel computation.
 
-5. Phase 2 completed successfully. ZZFeatureMap circuit structure confirmed: Hadamard → P(2x) → ZZ entanglement. Full circuit depth and gate count logged. Circuit diagram saved to assets/circuit_diagram.png.
+## Phase 3: QSVC Training (v2 — Production Pipeline)
+4. `qkernel.py`: Quantum kernel module. Computes statevectors once per sample via Statevector simulation. Builds fidelity kernel K[i,j] = |⟨ψ_i|ψ_j⟩|² via matrix multiplication. Includes diagnostics: off-diagonal stats, PSD check, effective rank, kernel-target alignment.
 
-Phase 3
-6. QSVC Training (`train.py`): Loads the preprocessed data, builds the ZZFeatureMap and FidelityQuantumKernel. Computes the quantum kernel matrix K(x, x') = |⟨φ(x)|φ(x')⟩|² for the training data row-by-row with a progress bar. This fidelity computation is a direct application of the Swap Test (Class 43 from the syllabus). The precomputed kernel matrix is then fed into a classical SVM (sklearn.svm.SVC). Unlike VQC's gradient-free optimization which wanders on flat landscapes, SVM uses convex optimization to guarantee a global optimum.
+5. `trainv2.py`: Full nested cross-validation pipeline. Outer 5-fold × 3 repeats for performance estimate, inner 5-fold for hyperparameter selection. Caches kernels per (reps, entanglement, gamma). Applies one-standard-error rule. Checks for gamma grid edge.
 
-7. Phase 3 completed. Computed a 550x550 kernel matrix for training and a 440x550 kernel matrix for testing. The QSVC model achieved much higher accuracy by avoiding the barren plateaus of VQC. Saved the SVC model (`qsvc_model.joblib`), the precomputed training kernel (`K_train.npy`), and metrics (`metrics.json`).
+6. `baselines.py`: Fair classical comparison. Tuned RBF-SVM, Linear SVM, Random Forest, k-NN. Same CV protocol. McNemar's test for statistical significance. Kernel alignment between quantum and RBF kernels.
 
-Phase 4 (Current State)
-8. Prediction (`predict.py`): Updated to load the QSVC pipeline. It accepts user inputs, applies StandardScaler → PCA → MinMaxScaler, computes the quantum kernel vector against the saved training data, and outputs the optimal crop recommendation via the trained SVM.
+## Phase 4: Analysis & Robustness
+7. `analysis.py`: Confusion matrix, top-5 confused pairs, feature comparison plots, 95% bootstrap CI, multi-seed stability (5 seeds).
 
-Conclusion:
-Switching from VQC to QSVC provided a massive breakthrough. By offloading the optimization to a classical SVM and using the quantum circuit purely as a kernel feature map (Swap Test), we bypassed barren plateaus and achieved stable, high-accuracy multi-class classification for all 22 crops.
+8. `learning_curve.py`: Accuracy vs training size (25%, 50%, 75%, 100%). Accuracy vs gamma with off-diagonal kernel mean (kernel concentration analysis).
+
+9. `noise_study.py`: Shot noise (256 to 8192 shots) and depolarizing noise robustness. PSD projection for noisy kernels.
+
+## Phase 5: Inference
+10. `predict.py`: Loads trained pipeline, accepts CSV or interactive input. Computes quantum kernel vector against saved training states. Outputs predicted crop + top-3 probabilities (via softmax on SVM decision function).
+
+## Key Design Decisions
+- Switched from VQC to QSVC to eliminate barren plateaus (Class 43: Swap Test)
+- 7-qubit ZZFeatureMap with bandwidth parameter gamma multiplying features before encoding
+- Noiseless statevector simulation (exact, no shot noise in main results)
+- Classical SVM with precomputed kernel — convex optimization, guaranteed global optimum
+- Nested CV prevents information leakage from test set

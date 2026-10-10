@@ -4,8 +4,9 @@ qiskit-algorithms==0.3.0
 qiskit-aer==0.14.2
 pylatexenc==2.10
 matplotlib==3.8.4
+seaborn==0.13.2
 pandas==2.2.2
 scikit-learn==1.4.2
-streamlit==1.35.0
 numpy==1.26.4
 joblib==1.4.2
+pytest==8.2.2streamlit>=1.30.0

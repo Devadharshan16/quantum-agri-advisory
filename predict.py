@@ -1,180 +1,244 @@
-import os
-import json
-import numpy as np
-import joblib
+#!/usr/bin/env python3
+"""
+Quantum Agricultural Advisory — Inference CLI (TASK 8).
 
-CROP_INFO = {
-    'apple'      : {'season': 'Sep—Nov',            'region': 'J&K, Himachal Pradesh',
-                    'tip': 'Needs 1000-1500 hours of chilling (below 7C).'},
-    'banana'     : {'season': 'Year-round',         'region': 'Tamil Nadu, Maharashtra, Gujarat',
-                    'tip': 'Requires heavy irrigation; avoid water stagnation.'},
-    'blackgram'  : {'season': 'Jun—Sep (Kharif)',   'region': 'AP, Maharashtra, MP',
-                    'tip': 'Short duration crop (90-120 days). Good for crop rotation.'},
-    'chickpea'   : {'season': 'Oct—Mar (Rabi)',     'region': 'MP, Maharashtra, Rajasthan',
-                    'tip': 'Highly sensitive to excessive moisture/frost.'},
-    'coconut'    : {'season': 'Year-round',         'region': 'Kerala, Karnataka, Tamil Nadu',
-                    'tip': 'Needs well-distributed rainfall and sandy loam soil.'},
-    'coffee'     : {'season': 'Nov—Feb',            'region': 'Karnataka (Kodagu), Kerala',
-                    'tip': 'Grows best under shade trees in hilly tracts.'},
-    'cotton'     : {'season': 'May—Oct (Kharif)',   'region': 'Gujarat, Maharashtra, Telangana',
-                    'tip': 'Black soil (Regur) is ideal. Very susceptible to bollworm.'},
-    'grapes'     : {'season': 'Feb—Apr',            'region': 'Maharashtra (Nashik)',
-                    'tip': 'Requires severe pruning for high yield.'},
-    'jute'       : {'season': 'Feb—May (Zaid)',     'region': 'West Bengal, Assam, Bihar',
-                    'tip': 'Needs hot, humid climate and abundant water for retting.'},
-    'kidneybeans': {'season': 'Jun—Oct (Kharif)',   'region': 'Maharashtra, Karnataka',
-                    'tip': 'Sensitive to salinity; needs well-drained soil.'},
-    'lentil'     : {'season': 'Oct—Mar (Rabi)',     'region': 'North India (masoor dal)',
-                    'tip': 'Highly nutritious; grows well in loamy soil.'},
-    'maize'      : {'season': 'Jun—Oct (Kharif)',   'region': 'Karnataka, Rajasthan, MP',
-                    'tip': '3rd largest cereal in India; versatile crop.'},
-    'mango'      : {'season': 'Mar—Jun',            'region': 'UP, AP, Tamil Nadu',
-                    'tip': 'National fruit of India; 5—8 years to first yield.'},
-    'mothbeans'  : {'season': 'Jun—Sep (Kharif)',   'region': 'Rajasthan staple',
-                    'tip': 'Extreme drought resistance; thrives in arid zones.'},
-    'mungbean'   : {'season': 'Jun—Sep (Kharif)',   'region': 'Pan-India (moong dal)',
-                    'tip': 'Short-duration; good for crop rotation.'},
-    'orange'     : {'season': 'Nov—Mar',            'region': 'Nagpur, Coorg, Sikkim',
-                    'tip': 'Nagpur orange is GI-tagged; needs well-drained soil.'},
-    'papaya'     : {'season': 'Year-round',         'region': 'AP, Tamil Nadu, Gujarat',
-                    'tip': 'Fastest fruiting tropical crop; harvest in 9—12 months.'},
-    'pigeonpeas' : {'season': 'Jun—Nov (Kharif)',   'region': 'Maharashtra, AP (tur dal)',
-                    'tip': 'India largest producer globally; deep-rooted.'},
-    'pomegranate': {'season': 'Aug—Feb',            'region': 'Maharashtra, Rajasthan, Gujarat',
-                    'tip': 'Highly drought tolerant; profitable export crop.'},
-    'rice'       : {'season': 'Jun—Nov (Kharif)',   'region': 'Punjab, WB, Tamil Nadu',
-                    'tip': 'Largest cultivated crop in India; needs waterlogging.'},
-    'watermelon' : {'season': 'Feb—Jun',            'region': 'AP, Karnataka, Rajasthan',
-                    'tip': 'Sandy loam soil; short 70-90 day crop cycle.'},
+Loads saved QSVC artifacts, accepts raw feature input (CSV or interactive),
+computes the quantum kernel vector against saved training states, and
+outputs the predicted crop plus top-3 class probabilities.
+
+Probabilities come from SVC.decision_function → softmax (not calibrated;
+for proper calibration use CalibratedClassifierCV at training time).
+"""
+from __future__ import annotations
+
+import argparse
+import json
+import logging
+import sys
+from pathlib import Path
+from typing import Sequence
+
+import joblib
+import numpy as np
+import pandas as pd
+
+log = logging.getLogger("predict")
+
+FEATURES = ["N", "P", "K", "temperature", "humidity", "ph", "rainfall"]
+FEATURE_RANGES = {
+    "N": (0, 140), "P": (5, 145), "K": (5, 205),
+    "temperature": (8, 44), "humidity": (14, 100),
+    "ph": (3.5, 9.9), "rainfall": (20, 300),
 }
 
-BANNER = """
-+========================================================+
-|    QUANTUM AGRICULTURAL ADVISORY SYSTEM                |
-|    Powered by QSVC (Quantum Kernel SVM)                |
-|    Course: 23CSE463 Quantum Computing - Amrita Chennai |
-+========================================================+
-"""
 
-# ➖➖ Check model files exist ➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖
-REQUIRED = [
-    'models/qsvc_model.joblib',
-    'models/X_train_kernel.npy',
-    'models/label_encoder.joblib',
-    'models/standard_scaler.joblib',
-    'models/minmax_scaler.joblib',
-    'models/data_meta.json',
-]
-missing = [f for f in REQUIRED if not os.path.exists(f)]
-if missing:
-    print("\nERROR: Missing files. Run the pipeline first:")
-    print("  python data_prep.py")
-    print("  python circuit_design.py")
-    print("  python train.py")
-    for f in missing:
-        print(f"  X  {f}")
-    raise SystemExit(1)
+# --------------------------------------------------------------------------- #
+# Helpers
+# --------------------------------------------------------------------------- #
+def softmax(x: np.ndarray) -> np.ndarray:
+    """Row-wise softmax."""
+    e = np.exp(x - x.max(axis=-1, keepdims=True))
+    return e / e.sum(axis=-1, keepdims=True)
 
-# ➖➖ Load saved pipeline ➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖
-print(BANNER)
-print("Loading quantum model ", end='', flush=True)
-label_encoder = joblib.load('models/label_encoder.joblib')
-std_scaler    = joblib.load('models/standard_scaler.joblib')
-scaler        = joblib.load('models/minmax_scaler.joblib')
-svc           = joblib.load('models/qsvc_model.joblib')
-X_train_kern  = np.load('models/X_train_kernel.npy')
-with open('models/data_meta.json') as f:
-    meta = json.load(f)
 
-NUM_QUBITS   = meta['num_qubits']            # 7
-NUM_FEATURES = meta['num_features']          # 7
-num_classes  = meta['num_classes']
+def require(path: Path) -> Path:
+    if not path.is_file():
+        raise FileNotFoundError(f"Required file not found: {path}")
+    return path
 
-# Build quantum kernel for inference
-from qiskit.circuit.library import ZZFeatureMap
-from qiskit_machine_learning.kernels import FidelityQuantumKernel
 
-feature_map = ZZFeatureMap(feature_dimension=NUM_QUBITS, reps=2, entanglement='full')
-kernel = FidelityQuantumKernel(feature_map=feature_map)
-print("done\n")
+def validate_input(df: pd.DataFrame) -> pd.DataFrame:
+    """Check columns, types, and ranges."""
+    missing = [c for c in FEATURES if c not in df.columns]
+    if missing:
+        raise ValueError(f"Missing columns: {missing}. Expected: {FEATURES}")
+    df = df[FEATURES].copy()
+    for col in FEATURES:
+        if not np.issubdtype(df[col].dtype, np.number):
+            raise ValueError(f"Column '{col}' is not numeric.")
+        lo, hi = FEATURE_RANGES[col]
+        oob = ((df[col] < lo) | (df[col] > hi)).sum()
+        if oob > 0:
+            log.warning("Column '%s': %d values outside expected range [%s, %s]", col, oob, lo, hi)
+    return df
 
-# ➖➖ Helper: validated float input ➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖
-def get_float(prompt, lo, hi):
-    while True:
-        try:
-            v = float(input(prompt))
-            if lo <= v <= hi:
-                return v
-            print(f"    -> Enter a value between {lo} and {hi}")
-        except ValueError:
-            print("    -> Please enter a number")
 
-# ➖➖ Main advisory loop ➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖
-FEATURES = meta['features']   # ['N','P','K','temperature','humidity','ph','rainfall']
+# --------------------------------------------------------------------------- #
+# Loading
+# --------------------------------------------------------------------------- #
+def load_pipeline(model_dir: Path) -> dict:
+    """Load all saved artifacts."""
+    svc = joblib.load(require(model_dir / "qsvc_model.joblib"))
+    std_scaler = joblib.load(require(model_dir / "standard_scaler.joblib"))
+    mm_scaler = joblib.load(require(model_dir / "minmax_scaler.joblib"))
+    encoder = joblib.load(require(model_dir / "label_encoder.joblib"))
+    train_states = np.load(require(model_dir / "train_states.npy"))
+    with open(require(model_dir / "config.json")) as f:
+        config = json.load(f)
+    with open(require(model_dir / "data_meta.json")) as f:
+        meta = json.load(f)
 
-print("=" * 60)
-print("  Enter your farm conditions to get a crop recommendation")
-print("=" * 60)
+    # Rebuild the quantum kernel components
+    from qkernel import build_feature_map, compute_states, fidelity_kernel
+    fm = build_feature_map(
+        n_qubits=meta["num_qubits"],
+        reps=config["hyperparameters"]["reps"],
+        entanglement=config["hyperparameters"]["entanglement"],
+    )
 
-while True:
-    print("\n  -- Soil Nutrients --")
-    N   = get_float("    Nitrogen   (N)  [0-140 kg/ha] : ", 0,   140)
-    P   = get_float("    Phosphorus (P)  [5-145 kg/ha] : ", 5,   145)
-    K   = get_float("    Potassium  (K)  [5-205 kg/ha] : ", 5,   205)
-    ph  = get_float("    Soil pH         [3.5-9.5]     : ", 3.5, 9.5)
+    return {
+        "svc": svc, "std_scaler": std_scaler, "mm_scaler": mm_scaler,
+        "encoder": encoder, "train_states": train_states, "config": config,
+        "meta": meta, "feature_map": fm,
+        "gamma": config["hyperparameters"]["gamma"],
+        "compute_states": compute_states, "fidelity_kernel": fidelity_kernel,
+    }
 
-    print("\n  -- Current Weather --")
-    temp     = get_float("    Temperature (C)  [8-44]       : ", 8,  44)
-    humidity = get_float("    Humidity     (%) [14-100]     : ", 14, 100)
-    rainfall = get_float("    Rainfall    (mm) [20-300]     : ", 20, 300)
 
-    # Build feature vector in training order
-    x_raw    = np.array([[N, P, K, temp, humidity, ph, rainfall]])
+# --------------------------------------------------------------------------- #
+# Prediction
+# --------------------------------------------------------------------------- #
+def predict_crops(pipeline: dict, df_raw: pd.DataFrame) -> pd.DataFrame:
+    """Run the full inference pipeline. Returns DataFrame with predictions."""
+    X_raw = df_raw[FEATURES].values.astype(np.float64)
 
-    # Classical preprocessing pipeline
-    x_std    = std_scaler.transform(x_raw)    # standardize
-    x_scaled = scaler.transform(x_std)        # scale to [0, pi]
+    # 1. StandardScaler
+    X_std = pipeline["std_scaler"].transform(X_raw)
+    # 2. MinMaxScaler to [0, pi]
+    X_scaled = pipeline["mm_scaler"].transform(X_std)
+    # 3. Clip to [0, pi]
+    X_scaled = np.clip(X_scaled, 0, np.pi)
+    # 4. Apply gamma bandwidth
+    X_gamma = X_scaled * pipeline["gamma"]
+    # 5. Compute statevectors
+    states = pipeline["compute_states"](pipeline["feature_map"], X_gamma, n_jobs=1)
+    # 6. Kernel vector against training states
+    K = pipeline["fidelity_kernel"](states, pipeline["train_states"])
+    # 7. SVM prediction
+    y_pred = pipeline["svc"].predict(K)
+    crops = pipeline["encoder"].inverse_transform(y_pred)
 
-    # ➖➖ QSVC inference ➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖
-    print("\n  Running quantum kernel inference ", end='', flush=True)
-    # Compute kernel vector: K(x_new, x_train) for all training points
-    k_vec     = kernel.evaluate(x_scaled, X_train_kern)
-    pred_idx  = svc.predict(k_vec)[0]
-    pred_crop = label_encoder.classes_[pred_idx]
-    print("done")
+    # 8. Top-3 probabilities from decision_function -> softmax
+    dec = pipeline["svc"].decision_function(K)
+    if dec.ndim == 1:
+        probs = softmax(dec.reshape(1, -1))
+    else:
+        probs = softmax(dec)
 
-    info = CROP_INFO.get(pred_crop, {})
+    results = []
+    classes = pipeline["encoder"].classes_
+    for i in range(len(X_raw)):
+        top3_idx = np.argsort(probs[i])[::-1][:3]
+        top3 = [(classes[j], float(probs[i, j])) for j in top3_idx]
+        results.append({
+            "predicted_crop": crops[i],
+            "top1": top3[0][0], "top1_prob": f"{top3[0][1]:.3f}",
+            "top2": top3[1][0], "top2_prob": f"{top3[1][1]:.3f}",
+            "top3": top3[2][0], "top3_prob": f"{top3[2][1]:.3f}",
+        })
 
+    return pd.DataFrame(results)
+
+
+# --------------------------------------------------------------------------- #
+# Interactive mode
+# --------------------------------------------------------------------------- #
+def interactive_mode(pipeline: dict) -> None:
+    """Prompt user for feature values and predict."""
     print("\n" + "=" * 60)
-    print(f"  RECOMMENDED CROP: {pred_crop.upper()}")
+    print("  QUANTUM AGRICULTURAL ADVISORY SYSTEM")
+    print("  Powered by QSVC (Quantum Kernel SVM)")
+    print("  Course: 23CSE463 Quantum Computing — Amrita Chennai")
     print("=" * 60)
-    if info:
-        print(f"  Season  : {info.get('season', 'N/A')}")
-        print(f"  Region  : {info.get('region', 'N/A')}")
-        print(f"  Tip     : {info.get('tip', '')}")
-    print(f"\n  Your conditions:")
-    print(f"    Soil    - N:{N:.0f}  P:{P:.0f}  K:{K:.0f}  pH:{ph:.1f}")
-    print(f"    Weather - Temp:{temp:.1f}C  "
-          f"Humidity:{humidity:.0f}%  Rainfall:{rainfall:.0f}mm")
-    print(f"\n  Quantum pipeline:")
-    print(f"    7 raw features")
-    print(f"    -> StandardScaler (zero mean, unit variance)")
-    print(f"    -> MinMaxScaler to [0, pi]")
-    print(f"    -> {NUM_QUBITS}-qubit ZZFeatureMap (quantum kernel)")
-    print(f"    -> QSVC {num_classes}-class classification")
-    print(f"    -> {pred_crop}")
 
-    # Load metrics if available
-    if os.path.exists('models/metrics.json'):
-        with open('models/metrics.json') as f:
-            m = json.load(f)
-        print(f"\n  Model: {m.get('model_type','QSVC')} | "
-              f"test acc {m.get('test_accuracy',0)*100:.1f}%")
+    while True:
+        print("\n  -- Enter your farm conditions --")
+        values = {}
+        for feat in FEATURES:
+            lo, hi = FEATURE_RANGES[feat]
+            while True:
+                try:
+                    v = float(input(f"    {feat:15s} [{lo}-{hi}]: "))
+                    if lo <= v <= hi:
+                        values[feat] = v
+                        break
+                    print(f"      -> Enter a value between {lo} and {hi}")
+                except ValueError:
+                    print("      -> Please enter a number")
 
-    print()
-    again = input("  Try another scenario? [y/n]: ").strip().lower()
-    if again != 'y':
-        break
+        df = pd.DataFrame([values])
+        result = predict_crops(pipeline, df)
+        row = result.iloc[0]
 
-print("\nThank you for using the Quantum Agricultural Advisory System!")
-print("Course 23CSE463 - Amrita School of Computing, Chennai")
+        print("\n" + "=" * 60)
+        print(f"  RECOMMENDED CROP: {row['predicted_crop'].upper()}")
+        print("=" * 60)
+        print(f"  Top 3 predictions:")
+        print(f"    1. {row['top1']:15s}  (confidence: {row['top1_prob']})")
+        print(f"    2. {row['top2']:15s}  (confidence: {row['top2_prob']})")
+        print(f"    3. {row['top3']:15s}  (confidence: {row['top3_prob']})")
+
+        again = input("\n  Try another scenario? [y/n]: ").strip().lower()
+        if again != "y":
+            break
+
+    print("\nThank you for using the Quantum Agricultural Advisory System!")
+
+
+# --------------------------------------------------------------------------- #
+# Main
+# --------------------------------------------------------------------------- #
+def main(argv: Sequence[str] | None = None) -> int:
+    p = argparse.ArgumentParser(
+        description=__doc__,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    p.add_argument("--model-dir", default="models", help="Directory with saved artifacts")
+    p.add_argument("--input-csv", default=None, help="CSV file with raw features (batch mode)")
+    p.add_argument("--output-csv", default=None, help="Output CSV (batch mode)")
+    p.add_argument("--interactive", action="store_true", help="Interactive CLI mode")
+    p.add_argument("--verbose", action="store_true")
+    args = p.parse_args(argv)
+
+    logging.basicConfig(
+        level=logging.DEBUG if args.verbose else logging.INFO,
+        format="%(asctime)s %(levelname)-7s %(message)s",
+        datefmt="%H:%M:%S",
+    )
+
+    try:
+        model_dir = Path(args.model_dir)
+        log.info("Loading pipeline from %s", model_dir)
+        pipeline = load_pipeline(model_dir)
+        log.info("Pipeline loaded (qubits=%d, gamma=%.3f, reps=%d, C=%g)",
+                 pipeline["meta"]["num_qubits"], pipeline["gamma"],
+                 pipeline["config"]["hyperparameters"]["reps"],
+                 pipeline["config"]["hyperparameters"]["C"])
+
+        if args.input_csv:
+            log.info("Batch mode: reading %s", args.input_csv)
+            df_in = pd.read_csv(args.input_csv)
+            df_in = validate_input(df_in)
+            results = predict_crops(pipeline, df_in)
+            out_path = args.output_csv or "predictions.csv"
+            results.to_csv(out_path, index=False)
+            log.info("Predictions saved to %s", out_path)
+            print(results.to_string(index=False))
+        elif args.interactive:
+            interactive_mode(pipeline)
+        else:
+            # Default: interactive
+            interactive_mode(pipeline)
+
+    except FileNotFoundError as exc:
+        log.error("%s", exc)
+        log.error("Run the training pipeline first: python data_prep.py && python trainv2.py")
+        return 1
+    except Exception:
+        log.exception("Unexpected failure")
+        return 2
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

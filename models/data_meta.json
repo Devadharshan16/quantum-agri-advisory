@@ -1,49 +1,41 @@
 {
-  "features": [
-    "N",
-    "P",
-    "K",
-    "temperature",
-    "humidity",
-    "ph",
-    "rainfall"
-  ],
-  "weather_features": [
-    "temperature",
-    "humidity",
-    "rainfall"
-  ],
-  "soil_features": [
-    "N",
-    "P",
-    "K",
-    "ph"
-  ],
-  "num_features": 7,
-  "num_qubits": 7,
-  "num_classes": 22,
-  "crops": [
-    "apple",
-    "banana",
-    "blackgram",
-    "chickpea",
-    "coconut",
-    "coffee",
-    "cotton",
-    "grapes",
-    "jute",
-    "kidneybeans",
-    "lentil",
-    "maize",
-    "mango",
-    "mothbeans",
-    "mungbean",
-    "muskmelon",
-    "orange",
-    "papaya",
-    "pigeonpeas",
-    "pomegranate",
-    "rice",
-    "watermelon"
-  ]
+    "features": [
+        "N",
+        "P",
+        "K",
+        "temperature",
+        "humidity",
+        "ph",
+        "rainfall"
+    ],
+    "num_features": 7,
+    "num_qubits": 7,
+    "num_classes": 22,
+    "crops": [
+        "apple",
+        "banana",
+        "blackgram",
+        "chickpea",
+        "coconut",
+        "coffee",
+        "cotton",
+        "grapes",
+        "jute",
+        "kidneybeans",
+        "lentil",
+        "maize",
+        "mango",
+        "mothbeans",
+        "mungbean",
+        "muskmelon",
+        "orange",
+        "papaya",
+        "pigeonpeas",
+        "pomegranate",
+        "rice",
+        "watermelon"
+    ],
+    "train_samples": 1760,
+    "test_samples": 440,
+    "seed": 42
 }
