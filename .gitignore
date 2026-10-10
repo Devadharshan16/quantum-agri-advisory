@@ -17,7 +17,6 @@ htmlcov/
 # Keep lightweight schema/samples, ignore large dumps
 data/*.csv
 data/*.npy
-models/*.joblib
 
 # Jupyter Notebook checkpoints
 .ipynb_checkpoints

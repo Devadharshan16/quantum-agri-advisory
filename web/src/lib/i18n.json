@@ -1,0 +1,473 @@
+{
+  "TRANSLATIONS": {
+    "English": {
+      "title": "QUANTUM CROP INTELLIGENCE",
+      "subtitle": "Agricultural crop suitability analysis for Indian farmlands",
+      "soil_nutrients": "SOIL NUTRIENTS",
+      "climate_env": "CLIMATE & ENVIRONMENT",
+      "generate_btn": "GENERATE REPORT",
+      "awaiting": "Awaiting Field Data",
+      "awaiting_sub": "Adjust parameters above, then click Generate Report.",
+      "recommended": "RECOMMENDED CROP",
+      "confidence": "CONFIDENCE",
+      "season": "SEASON",
+      "water_need": "WATER NEED",
+      "ideal_soil": "IDEAL SOIL",
+      "alternative": "ALTERNATIVE SUITABILITY",
+      "insights": "FIELD INSIGHTS & ANALYSIS",
+      "nitrogen": "Nitrogen (N)",
+      "phosphorus": "Phosphorus (P)",
+      "potassium": "Potassium (K)",
+      "temperature": "Temperature (°C)",
+      "humidity": "Humidity (%)",
+      "ph": "Soil pH",
+      "rainfall": "Rainfall (mm)",
+      "computing": "COMPUTING QUANTUM STATEVECTORS...",
+      "language": "Language",
+      "optimal": "Optimal Parameters",
+      "attention": "Parameters Requiring Attention",
+      "probability_dist": "Probability Distribution",
+      "crop": "Crop",
+      "probability": "Probability (%)"
+    },
+    "Hindi": {
+      "title": "क्वांटम फसल बुद्धिमत्ता",
+      "subtitle": "भारतीय कृषि भूमि के लिए फसल उपयुक्तता विश्लेषण",
+      "soil_nutrients": "मिट्टी के पोषक तत्व",
+      "climate_env": "जलवायु और पर्यावरण",
+      "generate_btn": "रिपोर्ट बनाएं",
+      "awaiting": "डेटा की प्रतीक्षा है",
+      "awaiting_sub": "ऊपर पैरामीटर सेट करें और फिर रिपोर्ट बनाएं पर क्लिक करें।",
+      "recommended": "अनुशंसित फसल",
+      "confidence": "संभावना",
+      "season": "मौसम",
+      "water_need": "पानी की जरूरत",
+      "ideal_soil": "आदर्श मिट्टी",
+      "alternative": "वैकल्पिक उपयुक्तता",
+      "insights": "क्षेत्र विश्लेषण",
+      "nitrogen": "नाइट्रोजन (N)",
+      "phosphorus": "फास्फोरस (P)",
+      "potassium": "पोटैशियम (K)",
+      "temperature": "तापमान (°C)",
+      "humidity": "नमी (%)",
+      "ph": "मिट्टी का पीएच",
+      "rainfall": "बारिश (mm)",
+      "computing": "क्वांटम स्थिति की गणना की जा रही है...",
+      "language": "भाषा",
+      "optimal": "इष्टतम पैरामीटर",
+      "attention": "ध्यान देने योग्य पैरामीटर",
+      "probability_dist": "संभावना वितरण",
+      "crop": "फसल",
+      "probability": "संभावना (%)"
+    },
+    "Tamil": {
+      "title": "குவாண்டம் பயிர் நுண்ணறிவு",
+      "subtitle": "இந்திய விவசாய நிலங்களுக்கான பயிர் பொருத்த பகுப்பாய்வு",
+      "soil_nutrients": "மண் ஊட்டச்சத்துக்கள்",
+      "climate_env": "காலநிலை & சுற்றுச்சூழல்",
+      "generate_btn": "அறிக்கையை உருவாக்கு",
+      "awaiting": "தரவுக்காக காத்திருக்கிறது",
+      "awaiting_sub": "மேலே அளவுருக்களை அமைத்து, அறிக்கையை உருவாக்கு என்பதை கிளிக் செய்யவும்.",
+      "recommended": "பரிந்துரைக்கப்படும் பயிர்",
+      "confidence": "நம்பிக்கை",
+      "season": "பருவம்",
+      "water_need": "நீர் தேவை",
+      "ideal_soil": "சிறந்த மண்",
+      "alternative": "மாற்று பொருத்தம்",
+      "insights": "கள நுண்ணறிவு மற்றும் பகுப்பாய்வு",
+      "nitrogen": "நைட்ரஜன் (N)",
+      "phosphorus": "பாஸ்பரஸ் (P)",
+      "potassium": "பொட்டாசியம் (K)",
+      "temperature": "வெப்பநிலை (°C)",
+      "humidity": "ஈரப்பதம் (%)",
+      "ph": "மண் pH",
+      "rainfall": "மழை (mm)",
+      "computing": "குவாண்டம் நிலையை கணக்கிடுகிறது...",
+      "language": "மொழி",
+      "optimal": "உகந்த அளவுருக்கள்",
+      "attention": "கவனம் தேவைப்படும் அளவுருக்கள்",
+      "probability_dist": "நிகழ்தகவு பரவல்",
+      "crop": "பயிர்",
+      "probability": "நிகழ்தகவு (%)"
+    },
+    "Telugu": {
+      "title": "క్వాంటం పంట ఇంటెలిజెన్స్",
+      "subtitle": "భారతీయ వ్యవసాయ భూములకు పంట అనుకూలత విశ్లేషణ",
+      "soil_nutrients": "నేల పోషకాలు",
+      "climate_env": "వాతావరణం & పర్యావరణం",
+      "generate_btn": "రిపోర్ట్ సృష్టించండి",
+      "awaiting": "డేటా కోసం వేచి ఉంది",
+      "awaiting_sub": "పైన పారామితులను సెట్ చేసి రిపోర్ట్ సృష్టించండి క్లిక్ చేయండి.",
+      "recommended": "సిఫార్సు చేయబడిన పంట",
+      "confidence": "విశ్వాసం",
+      "season": "సీజన్",
+      "water_need": "నీటి అవసరం",
+      "ideal_soil": "ఆదర్శ నేల",
+      "alternative": "ప్రత్యామ్నాయ అనుకూలత",
+      "insights": "ఫీల్డ్ విశ్లేషణ",
+      "nitrogen": "నైట్రోజన్ (N)",
+      "phosphorus": "భాస్వరం (P)",
+      "potassium": "పొటాషియం (K)",
+      "temperature": "ఉష్ణోగ్రత (°C)",
+      "humidity": "తేమ (%)",
+      "ph": "నేల pH",
+      "rainfall": "వర్షపాతం (mm)",
+      "computing": "క్వాంటం స్థితిని లెక్కిస్తోంది...",
+      "language": "భాష",
+      "optimal": "అనుకూల పారామితులు",
+      "attention": "శ్రద్ధ వహించాల్సిన పారామితులు",
+      "probability_dist": "సంభావ్యత పంపిణీ",
+      "crop": "పంట",
+      "probability": "సంభావ్యత (%)"
+    },
+    "Marathi": {
+      "title": "क्वांटम पीक बुद्धिमत्ता",
+      "subtitle": "भारतीय शेतजमिनीसाठी पीक अनुकूलता विश्लेषण",
+      "soil_nutrients": "मातीतील पोषक तत्वे",
+      "climate_env": "हवामान आणि पर्यावरण",
+      "generate_btn": "अहवाल तयार करा",
+      "awaiting": "डेटाची प्रतीक्षा आहे",
+      "awaiting_sub": "वर पॅरामीटर्स सेट करा आणि अहवाल तयार करा वर क्लिक करा.",
+      "recommended": "शिफारस केलेले पीक",
+      "confidence": "संभाव्यता",
+      "season": "हंगाम",
+      "water_need": "पाण्याची गरज",
+      "ideal_soil": "आदर्श माती",
+      "alternative": "पर्यायी अनुकूलता",
+      "insights": "क्षेत्र विश्लेषण",
+      "nitrogen": "नायट्रोजन (N)",
+      "phosphorus": "फॉस्फरस (P)",
+      "potassium": "पोटॅशियम (K)",
+      "temperature": "तापमान (°C)",
+      "humidity": "आर्द्रता (%)",
+      "ph": "मातीचा सामू (pH)",
+      "rainfall": "पाऊस (mm)",
+      "computing": "क्वांटम स्थितीची गणना करत आहे...",
+      "language": "भाषा",
+      "optimal": "इष्टतम पॅरामीटर्स",
+      "attention": "लक्ष देण्याची आवश्यकता असलेले पॅरामीटर्स",
+      "probability_dist": "संभाव्यता वितरण",
+      "crop": "पीक",
+      "probability": "संभाव्यता (%)"
+    }
+  },
+  "CROP_TRANSLATIONS": {
+    "apple": {
+      "English": "Apple",
+      "Hindi": "सेब",
+      "Tamil": "ஆப்பிள்",
+      "Telugu": "ఆపిల్",
+      "Marathi": "सफरचंद"
+    },
+    "banana": {
+      "English": "Banana",
+      "Hindi": "केला",
+      "Tamil": "வாழைப்பழம்",
+      "Telugu": "అరటి",
+      "Marathi": "केळी"
+    },
+    "blackgram": {
+      "English": "Blackgram",
+      "Hindi": "उड़द",
+      "Tamil": "உளுந்து",
+      "Telugu": "మినుములు",
+      "Marathi": "उडीद"
+    },
+    "chickpea": {
+      "English": "Chickpea",
+      "Hindi": "चना",
+      "Tamil": "கொண்டைக்கடலை",
+      "Telugu": "శనగలు",
+      "Marathi": "हरभरा"
+    },
+    "coconut": {
+      "English": "Coconut",
+      "Hindi": "नारियल",
+      "Tamil": "தேங்காய்",
+      "Telugu": "కొబ్బరి",
+      "Marathi": "नारळ"
+    },
+    "coffee": {
+      "English": "Coffee",
+      "Hindi": "कॉफी",
+      "Tamil": "காபி",
+      "Telugu": "కాఫీ",
+      "Marathi": "कॉफी"
+    },
+    "cotton": {
+      "English": "Cotton",
+      "Hindi": "कपास",
+      "Tamil": "பருத்தி",
+      "Telugu": "పత్తి",
+      "Marathi": "कापूस"
+    },
+    "grapes": {
+      "English": "Grapes",
+      "Hindi": "अंगूर",
+      "Tamil": "திராட்சை",
+      "Telugu": "ద్రాక్ష",
+      "Marathi": "द्राक्षे"
+    },
+    "jute": {
+      "English": "Jute",
+      "Hindi": "जूट",
+      "Tamil": "சணல்",
+      "Telugu": "జనపనార",
+      "Marathi": "ताग"
+    },
+    "kidneybeans": {
+      "English": "Kidney Beans",
+      "Hindi": "राजमा",
+      "Tamil": "ராஜ்மா",
+      "Telugu": "రాజ్మా",
+      "Marathi": "राजमा"
+    },
+    "lentil": {
+      "English": "Lentil",
+      "Hindi": "मसूर",
+      "Tamil": "மைசூர் பருப்பு",
+      "Telugu": "ఎర్ర కందిపప్పు",
+      "Marathi": "मसूर"
+    },
+    "maize": {
+      "English": "Maize",
+      "Hindi": "मक्का",
+      "Tamil": "மக்காச்சோளம்",
+      "Telugu": "మొక్కజొన్న",
+      "Marathi": "मका"
+    },
+    "mango": {
+      "English": "Mango",
+      "Hindi": "आम",
+      "Tamil": "மாம்பழம்",
+      "Telugu": "మామిడి",
+      "Marathi": "आंबा"
+    },
+    "mothbeans": {
+      "English": "Moth Beans",
+      "Hindi": "मोठ",
+      "Tamil": "பயறு",
+      "Telugu": "మొలకలు",
+      "Marathi": "मठ"
+    },
+    "mungbean": {
+      "English": "Mung Bean",
+      "Hindi": "मूंग",
+      "Tamil": "பாசிப்பயறு",
+      "Telugu": "పెసలు",
+      "Marathi": "मूग"
+    },
+    "muskmelon": {
+      "English": "Muskmelon",
+      "Hindi": "खरबूजा",
+      "Tamil": "முலாம் பழம்",
+      "Telugu": "కర్బూజా",
+      "Marathi": "खरबूज"
+    },
+    "orange": {
+      "English": "Orange",
+      "Hindi": "संतरा",
+      "Tamil": "ஆரஞ்சு",
+      "Telugu": "నారింజ",
+      "Marathi": "संत्रे"
+    },
+    "papaya": {
+      "English": "Papaya",
+      "Hindi": "पपीता",
+      "Tamil": "பப்பாளி",
+      "Telugu": "బొప్పాయి",
+      "Marathi": "पपई"
+    },
+    "pigeonpeas": {
+      "English": "Pigeon Peas",
+      "Hindi": "अरहर",
+      "Tamil": "துவரம் பருப்பு",
+      "Telugu": "కందులు",
+      "Marathi": "तूर"
+    },
+    "pomegranate": {
+      "English": "Pomegranate",
+      "Hindi": "अनार",
+      "Tamil": "மாதுளை",
+      "Telugu": "దానిమ్మ",
+      "Marathi": "डाळिंब"
+    },
+    "rice": {
+      "English": "Rice",
+      "Hindi": "चावल",
+      "Tamil": "அரிசி",
+      "Telugu": "వరి",
+      "Marathi": "तांदूळ"
+    },
+    "watermelon": {
+      "English": "Watermelon",
+      "Hindi": "तरबूज",
+      "Tamil": "தர்பூசணி",
+      "Telugu": "పుచ్చకాయ",
+      "Marathi": "कलिंगड"
+    }
+  },
+  "CONDITION_TRANSLATIONS": {
+    "Kharif": {
+      "English": "Kharif",
+      "Hindi": "खरीफ",
+      "Tamil": "காரீப்",
+      "Telugu": "ఖరీఫ్",
+      "Marathi": "खरीप"
+    },
+    "Rabi": {
+      "English": "Rabi",
+      "Hindi": "रबी",
+      "Tamil": "ராபி",
+      "Telugu": "రబీ",
+      "Marathi": "रब्बी"
+    },
+    "Zaid": {
+      "English": "Zaid",
+      "Hindi": "जायद",
+      "Tamil": "சையத்",
+      "Telugu": "జైద్",
+      "Marathi": "जायद"
+    },
+    "Perennial": {
+      "English": "Perennial",
+      "Hindi": "बारहमासी",
+      "Tamil": "வற்றாத",
+      "Telugu": "బహువార్షిక",
+      "Marathi": "बारमाही"
+    },
+    "Kharif/Rabi": {
+      "English": "Kharif/Rabi",
+      "Hindi": "खरीफ/रबी",
+      "Tamil": "காரீப்/ராபி",
+      "Telugu": "ఖరీఫ్/రబీ",
+      "Marathi": "खरीप/रब्बी"
+    },
+    "Kharif/Zaid": {
+      "English": "Kharif/Zaid",
+      "Hindi": "खरीफ/जायद",
+      "Tamil": "காரீப்/சையத்",
+      "Telugu": "ఖరీఫ్/జైద్",
+      "Marathi": "खरीप/जायद"
+    },
+    "High": {
+      "English": "High",
+      "Hindi": "अधिक",
+      "Tamil": "அதிக",
+      "Telugu": "అధిక",
+      "Marathi": "जास्त"
+    },
+    "Moderate": {
+      "English": "Moderate",
+      "Hindi": "मध्यम",
+      "Tamil": "மிதமான",
+      "Telugu": "మధ్యస్థ",
+      "Marathi": "मध्यम"
+    },
+    "Low": {
+      "English": "Low",
+      "Hindi": "कम",
+      "Tamil": "குறைவான",
+      "Telugu": "తక్కువ",
+      "Marathi": "कमी"
+    },
+    "Clay/Loam": {
+      "English": "Clay/Loam",
+      "Hindi": "मिट्टी/दोमट",
+      "Tamil": "களிமண்",
+      "Telugu": "బంకమట్టి/లోమ్",
+      "Marathi": "चिकणमाती/लोम"
+    },
+    "Loamy": {
+      "English": "Loamy",
+      "Hindi": "दोमट",
+      "Tamil": "களிமண்",
+      "Telugu": "లోమ్",
+      "Marathi": "लोम"
+    },
+    "Alluvial": {
+      "English": "Alluvial",
+      "Hindi": "जलोढ़",
+      "Tamil": "வண்டல்",
+      "Telugu": "ఒండ్రు",
+      "Marathi": "गाळाची"
+    },
+    "Black Cotton Soil": {
+      "English": "Black Cotton Soil",
+      "Hindi": "काली कपास मिट्टी",
+      "Tamil": "கரிசல் மண்",
+      "Telugu": "నల్ల రేగడి",
+      "Marathi": "काळी कापूस माती"
+    },
+    "Sandy Loam": {
+      "English": "Sandy Loam",
+      "Hindi": "बलुई दोमट",
+      "Tamil": "மணல் களிமண்",
+      "Telugu": "ఇసుక లోమ్",
+      "Marathi": "वाळूयुक्त लोम"
+    },
+    "Well-drained Loam": {
+      "English": "Well-drained Loam",
+      "Hindi": "अच्छी जल निकासी वाली दोमट",
+      "Tamil": "நன்கு வடிகட்டப்பட்ட களிமண்",
+      "Telugu": "బాగా ఎండిపోయిన లోమ్",
+      "Marathi": "चांगला निचरा होणारी लोम"
+    },
+    "Well-drained": {
+      "English": "Well-drained",
+      "Hindi": "अच्छी जल निकासी वाली",
+      "Tamil": "நன்கு வடிகட்டப்பட்ட",
+      "Telugu": "బాగా ఎండిపోయిన",
+      "Marathi": "चांगला निचरा होणारी"
+    },
+    "Alluvial/Laterite": {
+      "English": "Alluvial/Laterite",
+      "Hindi": "जलोढ़/लेटराइट",
+      "Tamil": "வண்டல்/லேட்டரைட்",
+      "Telugu": "ఒండ్రు/లాటరైట్",
+      "Marathi": "गाळाची/लॅटेराइट"
+    },
+    "Rich Loamy": {
+      "English": "Rich Loamy",
+      "Hindi": "उपजाऊ दोमट",
+      "Tamil": "வளமான களிமண்",
+      "Telugu": "సారవంతమైన లోమ్",
+      "Marathi": "सुपीक लोम"
+    },
+    "Clay Loam": {
+      "English": "Clay Loam",
+      "Hindi": "चिकनी दोमट",
+      "Tamil": "களிமண்",
+      "Telugu": "బంకమట్టి లోమ్",
+      "Marathi": "चिकणमाती लोम"
+    },
+    "Sandy": {
+      "English": "Sandy",
+      "Hindi": "बलुई",
+      "Tamil": "மணல்",
+      "Telugu": "ఇసుక",
+      "Marathi": "वाळू"
+    },
+    "Deep Loam": {
+      "English": "Deep Loam",
+      "Hindi": "गहरी दोमट",
+      "Tamil": "ஆழமான களிமண்",
+      "Telugu": "లోతైన లోమ్",
+      "Marathi": "खोल लोम"
+    },
+    "Heavy Clay/Loam": {
+      "English": "Heavy Clay/Loam",
+      "Hindi": "भारी मिट्टी/दोमट",
+      "Tamil": "கனமான களிமண்",
+      "Telugu": "బరువైన బంకమట్టి/లోమ్",
+      "Marathi": "जड चिकणमाती/लोम"
+    },
+    "Rich Forest Loam": {
+      "English": "Rich Forest Loam",
+      "Hindi": "उपजाऊ वन दोमट",
+      "Tamil": "வளமான வன களிமண்",
+      "Telugu": "సారవంతమైన అటవీ లోమ్",
+      "Marathi": "सुपीक जंगल लोम"
+    }
+  }
+}

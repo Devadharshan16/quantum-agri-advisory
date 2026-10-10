@@ -9,4 +9,7 @@ pandas==2.2.2
 scikit-learn==1.4.2
 numpy==1.26.4
 joblib==1.4.2
-pytest==8.2.2streamlit>=1.30.0
+pytest==8.2.2
+streamlit>=1.30.0
+fastapi
+uvicorn
