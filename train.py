@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 QSVC Training — Quantum Kernel SVM × 7 Qubits × 22 Crops
-➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖
+➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖➖
 Computes the quantum kernel matrix row-by-row with a progress bar,
 then feeds the precomputed kernel to classical SVM.
 
