@@ -32,6 +32,23 @@ if (!baseUrl.startsWith('http://') && !baseUrl.startsWith('https://')) {
 }
 const pingEndpoint = `${baseUrl}/docs`;
 
+// Render Web Service Health Check: Render requires all Web Services to listen on process.env.PORT.
+// Without this server listening on PORT, Render stays "In progress" and times out.
+const PORT = process.env.PORT || 3000;
+const server = http.createServer((req, res) => {
+  res.writeHead(200, { 'Content-Type': 'application/json' });
+  res.end(JSON.stringify({
+    status: 'active',
+    service: 'Render Keep-Alive Daemon',
+    target: pingEndpoint,
+    uptime_seconds: Math.floor(process.uptime())
+  }));
+});
+
+server.listen(PORT, '0.0.0.0', () => {
+  console.log(`[Health Server] Listening on port ${PORT} (Render port binding satisfied)`);
+});
+
 // Interval in milliseconds (10 minutes = 600,000 ms; Render sleeps at 15 mins)
 const INTERVAL_MS = 10 * 60 * 1000;
 
