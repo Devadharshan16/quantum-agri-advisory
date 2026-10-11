@@ -6,7 +6,7 @@ import {
   CloudRain, Beaker, Sprout, CheckCircle2 
 } from "lucide-react";
 import { features, Feature } from "@/lib/features";
-import { predictCrop, cancelInFlightRequest } from "@/lib/api";
+import { predictCrop, cancelInFlightRequest, warmupBackend } from "@/lib/api";
 import { PredictResponse } from "@/lib/types";
 import { getCropMetadata } from "@/lib/crops";
 import { t, tCrop, tCond, SupportedLanguage } from "@/lib/i18n";
@@ -34,6 +34,8 @@ export default function Page() {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsMounted(true);
+    // Silently ping backend in the background so it starts waking up if asleep on Render
+    warmupBackend();
     try {
       const saved = localStorage.getItem("app_lang") as SupportedLanguage;
       if (saved && ["English", "Hindi", "Tamil", "Telugu", "Marathi"].includes(saved)) {

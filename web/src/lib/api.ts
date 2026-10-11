@@ -11,15 +11,22 @@ export function cancelInFlightRequest() {
   }
 }
 
+export function warmupBackend() {
+  try {
+    fetch(`${API_BASE}/docs`, { mode: "no-cors" }).catch(() => {});
+  } catch {}
+}
+
 export async function predictCrop(request: PredictRequest): Promise<ApiResult> {
   cancelInFlightRequest();
   
   currentAbortController = new AbortController();
   const signal = currentAbortController.signal;
   
+  // Render free tier can take up to 45-60s to wake up on cold start
   const timeoutId = setTimeout(() => {
     if (currentAbortController) currentAbortController.abort();
-  }, 15000);
+  }, 60000);
 
   const startTime = performance.now();
 
